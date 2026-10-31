@@ -42,7 +42,7 @@ public final class CheatLabScreen extends Screen {
 
     @Override
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-        this.renderBackground(context);
+        this.renderBackground(context, mouseX, mouseY, delta);
         int left = this.width / 2 - 125;
         int top = this.height / 2 - 82;
         context.fill(left, top, left + 250, top + 170, PANEL);
