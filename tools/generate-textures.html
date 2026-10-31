@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>CheatLab PNG Texture Generator</title>
+<style>
+:root{color-scheme:dark;font:15px system-ui;background:#081019;color:#eef6f2}
+body{max-width:900px;margin:40px auto;padding:0 20px}
+h1{color:#79f0ae}p{color:#aab9c8;line-height:1.55}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:18px}
+article{background:#111d29;border:1px solid #315044;border-radius:18px;padding:16px}
+canvas{width:100%;height:auto;background:linear-gradient(135deg,#172435,#0b121c);border-radius:10px}
+button{margin-top:12px;border:0;border-radius:12px;background:#2b865e;color:white;padding:10px 14px;font-weight:700;cursor:pointer}
+</style>
+</head>
+<body>
+<h1>CheatLab · PNG Texture Generator</h1>
+<p>These Canvas drawings export the smooth, rounded PNG textures used by the Fabric menu. Press each button to save its PNG resource.</p>
+<div class="grid" id="textures"></div>
+<script>
+function rounded(ctx,x,y,w,h,r){ctx.beginPath();ctx.roundRect(x,y,w,h,r);}
+function panel(){const c=document.createElement('canvas');c.width=900;c.height=660;const g=c.getContext('2d');
+let bg=g.createLinearGradient(0,0,900,660);bg.addColorStop(0,'rgba(19,29,42,.98)');bg.addColorStop(1,'rgba(9,19,29,.99)');
+rounded(g,7,7,886,646,38);g.fillStyle=bg;g.fill();
+g.save();g.clip();let glow=g.createRadialGradient(110,0,10,110,0,500);glow.addColorStop(0,'rgba(45,255,158,.22)');glow.addColorStop(1,'rgba(45,255,158,0)');g.fillStyle=glow;g.fillRect(0,0,900,660);
+let shine=g.createLinearGradient(0,0,0,300);shine.addColorStop(0,'rgba(255,255,255,.09)');shine.addColorStop(1,'rgba(255,255,255,0)');g.fillStyle=shine;g.fillRect(0,0,900,300);g.restore();
+let edge=g.createLinearGradient(0,0,900,660);edge.addColorStop(0,'rgba(110,255,183,.8)');edge.addColorStop(1,'rgba(86,224,170,.3)');g.lineWidth=3;g.strokeStyle=edge;rounded(g,7,7,886,646,38);g.stroke();g.fillStyle='rgba(121,255,190,.55)';rounded(g,38,8,820,3,2);g.fill();return c;}
+function card(){const c=document.createElement('canvas');c.width=572;c.height=92;const g=c.getContext('2d');let bg=g.createLinearGradient(0,0,572,92);bg.addColorStop(0,'rgba(28,40,54,.96)');bg.addColorStop(1,'rgba(17,27,39,.94)');rounded(g,3,3,566,86,20);g.fillStyle=bg;g.fill();g.lineWidth=2;g.strokeStyle='rgba(123,171,166,.35)';g.stroke();g.fillStyle='rgba(255,255,255,.035)';rounded(g,10,7,552,25,12);g.fill();return c;}
+function toggle(on){const c=document.createElement('canvas');c.width=112;c.height=56;const g=c.getContext('2d');g.shadowColor=on?'rgba(80,255,165,.4)':'rgba(0,0,0,.35)';g.shadowBlur=on?14:8;rounded(g,3,5,106,46,23);let bg=g.createLinearGradient(0,5,0,51);if(on){bg.addColorStop(0,'#54D995');bg.addColorStop(1,'#247B58')}else{bg.addColorStop(0,'#344354');bg.addColorStop(1,'#202B38')}g.fillStyle=bg;g.fill();g.shadowBlur=0;g.lineWidth=2;g.strokeStyle=on?'rgba(144,255,202,.75)':'rgba(151,170,190,.35)';rounded(g,3,5,106,46,23);g.stroke();let x=on?86:26;g.fillStyle='rgba(255,255,255,.98)';g.beginPath();g.arc(x,28,17,0,Math.PI*2);g.fill();g.fillStyle='rgba(255,255,255,.65)';g.beginPath();g.arc(x-5,22,5,0,Math.PI*2);g.fill();return c;}
+const items=[['panel.png',panel()],['card.png',card()],['switch-on.png',toggle(true)],['switch-off.png',toggle(false)]];
+const host=document.getElementById('textures');
+for(const [name,canvas] of items){const a=document.createElement('article');const title=document.createElement('h3');title.textContent=name;const link=document.createElement('button');link.textContent='Download PNG';link.onclick=()=>{const url=canvas.toDataURL('image/png');const node=document.createElement('a');node.href=url;node.download=name;node.click();};a.append(title,canvas,link);host.append(a);}
+</script>
+</body>
+</html>
