@@ -3,122 +3,177 @@ package dev.cheatlab;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.text.Text;
+import net.minecraft.util.Identifier;
 import org.lwjgl.glfw.GLFW;
 
 public final class CheatLabScreen extends Screen {
     private static final int GREEN = 0xFF70EBA6;
     private static final int WHITE = 0xFFF0F4F7;
     private static final int MUTED = 0xFF8D9AAA;
-    private static final String[] TABS = {"Combat", "Movement", "Visual", "HUD"};
-    private String tab = "Combat";
-    private long start = System.nanoTime();
+    private static final String[] TABS = {"Movement", "Visual", "HUD", "Info"};
 
-    public CheatLabScreen() { super(Text.literal("CheatLab")); }
+    private static final Identifier PANEL =
+            new Identifier("cheatlab", "textures/gui/panel.png");
+    private static final Identifier CARD =
+            new Identifier("cheatlab", "textures/gui/card.png");
+    private static final Identifier SWITCH_ON =
+            new Identifier("cheatlab", "textures/gui/switch-on.png");
+    private static final Identifier SWITCH_OFF =
+            new Identifier("cheatlab", "textures/gui/switch-off.png");
+
+    private String tab = "HUD";
+    private final long startedAt = System.nanoTime();
+
+    public CheatLabScreen() {
+        super(Text.literal("CheatLab"));
+    }
 
     @Override
-    public void render(DrawContext c, int mx, int my, float delta) {
-        renderBackground(c, mx, my, delta);
-        int x = width / 2 - 225, y = height / 2 - 145;
-        double pulse = (Math.sin((System.nanoTime() - start) / 450000000.0) + 1) / 2;
-        rounded(c, x - 2, y - 2, 454, 294, 0x5536D98B, 0x8870EBA6);
-        rounded(c, x, y, 450, 290, 0xF20B1018, 0xFF70EBA6);
-        rounded(c, x + 12, y + 48, 112, 228, 0xD9111822, 0xFF263644);
-        rounded(c, x + 134, y + 48, 304, 228, 0xC9141D28, 0xFF334451);
-        c.drawTextWithShadow(textRenderer, Text.literal("CHEATLAB"), x + 19, y + 16, GREEN);
-        c.drawTextWithShadow(textRenderer, Text.literal("FABRIC 1.20.4  /  CLIENT"), x + 285, y + 17, MUTED);
-        c.fill(x + 14, y + 39, x + 436, y + 40, 0x334D6570);
+    public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+        renderBackground(context, mouseX, mouseY, delta);
+
+        int x = width / 2 - 240;
+        int y = height / 2 - 160;
+        double pulse = (Math.sin((System.nanoTime() - startedAt) / 460000000.0) + 1.0) / 2.0;
+
+        context.drawTexture(PANEL, x, y, 480, 320, 0.0F, 0.0F, 900, 660, 900, 660);
+        context.fill(x + 13, y + 54, x + 137, y + 303, 0x99101923);
+        context.drawTextWithShadow(textRenderer, Text.literal("CHEATLAB"), x + 22, y + 17, GREEN);
+        context.drawTextWithShadow(textRenderer, Text.literal("FABRIC 1.20.4  /  CLIENT"),
+                x + 302, y + 18, MUTED);
+        context.fill(x + 18, y + 43, x + 462, y + 44, 0x334D6570);
+
         for (int i = 0; i < TABS.length; i++) {
-            int ty = y + 62 + i * 43;
-            boolean active = tab.equals(TABS[i]);
-            if (active) rounded(c, x + 19, ty - 8, 98, 29, 0xD52B7652, GREEN);
-            c.drawTextWithShadow(textRenderer, Text.literal(TABS[i]), x + 31, ty, active ? WHITE : MUTED);
-        }
-        c.drawTextWithShadow(textRenderer, Text.literal(tab.toUpperCase()), x + 151, y + 62, GREEN);
-        int row = y + 95;
-        if (tab.equals("Combat")) {
-            module(c, x, row, "CPS Counter", "Live left / right click counter", "HUD", true);
-            module(c, x, row + 49, "Keystrokes", "Live WASD key display", "HUD", CheatLabClient.keystrokes);
-            module(c, x, row + 98, "Armor Status", "Equipped armor information", "HUD", CheatLabClient.armorStatus);
-        } else if (tab.equals("Movement")) {
-            module(c, x, row, "Auto Sprint", "Sprint while moving forward", "CLIENT", CheatLabClient.autoSprint);
-        } else if (tab.equals("Visual")) {
-            module(c, x, row, "Fullbright", "Increase gamma in dark areas", "CLIENT", CheatLabClient.fullbright);
-        } else {
-            module(c, x, row, "FPS Counter", "Current frame rate", "HUD", CheatLabClient.fpsCounter);
-            module(c, x, row + 49, "Coordinates", "Player block position", "HUD", CheatLabClient.coordinates);
-            module(c, x, row + 98, "Watermark", "CheatLab HUD label", "HUD", CheatLabClient.watermark);
-        }
-        int dot = 0xFF000000 | ((int)(75 + pulse * 20) << 16) | ((int)(190 + pulse * 35) << 8) | 130;
-        circle(c, x + 430, y + 22, 4 + pulse, dot);
-        c.drawTextWithShadow(textRenderer, Text.literal("RIGHT SHIFT  /  MENU"), x + 18, y + 269, MUTED);
-        super.render(c, mx, my, delta);
-    }
-
-    private void module(DrawContext c, int x, int y, String name, String desc, String tag, boolean on) {
-        int left = x + 147;
-        rounded(c, left, y - 8, 286, 42, 0xB91B2631, on ? 0xFF4A9C72 : 0xFF394653);
-        c.drawTextWithShadow(textRenderer, Text.literal(name), left + 11, y, WHITE);
-        c.drawTextWithShadow(textRenderer, Text.literal(desc), left + 11, y + 14, MUTED);
-        c.drawTextWithShadow(textRenderer, Text.literal(tag), left + 205, y + 3, MUTED);
-        rounded(c, left + 238, y + 2, 39, 19, on ? 0xFF347B59 : 0xFF394451, on ? GREEN : 0xFF65717D);
-        circle(c, left + (on ? 267 : 248), y + 11, 6, WHITE);
-        c.drawTextWithShadow(textRenderer, Text.literal(on ? "ON" : "OFF"), left + 207, y + 20, on ? GREEN : MUTED);
-    }
-
-    private static void rounded(DrawContext c, int x, int y, int w, int h, int fill, int edge) {
-        int r = Math.min(9, Math.min(w / 2, h / 2));
-        for (int yy = 0; yy < h; yy++) {
-            int inset = 0;
-            if (yy < r) inset = (int)Math.ceil(r - Math.sqrt(r*r - (r-yy)*(r-yy)));
-            else if (yy >= h-r) {
-                int d = yy - (h-r-1);
-                inset = (int)Math.ceil(r - Math.sqrt(r*r - (r-d)*(r-d)));
+            int ty = y + 76 + i * 48;
+            boolean selected = tab.equals(TABS[i]);
+            if (selected) {
+                context.fill(x + 19, ty - 9, x + 130, ty + 21, 0xCC286B4C);
+                context.fill(x + 19, ty - 9, x + 22, ty + 21, GREEN);
             }
-            c.fill(x + inset, y + yy, x + w - inset, y + yy + 1, fill);
+            context.drawTextWithShadow(textRenderer, Text.literal(TABS[i]),
+                    x + 31, ty, selected ? WHITE : MUTED);
         }
-        c.fill(x + r, y, x + w - r, y + 1, edge);
+
+        context.drawTextWithShadow(textRenderer, Text.literal(tab.toUpperCase()),
+                x + 153, y + 65, GREEN);
+        drawModules(context, x, y);
+
+        int dot = 0xFF000000 | ((int) (70 + pulse * 30) << 16)
+                | ((int) (190 + pulse * 35) << 8) | 130;
+        circle(context, x + 455, y + 23, 4 + pulse, dot);
+        context.drawTextWithShadow(textRenderer, Text.literal("RIGHT SHIFT  /  MENU"),
+                x + 20, y + 296, MUTED);
+
+        super.render(context, mouseX, mouseY, delta);
     }
 
-    private static void circle(DrawContext c, int x, int y, double r, int color) {
-        for (int dy = -(int)r; dy <= (int)r; dy++) {
-            int dx = (int)Math.floor(Math.sqrt(Math.max(0, r*r-dy*dy)));
-            c.fill(x-dx, y+dy, x+dx+1, y+dy+1, color);
+    private void drawModules(DrawContext context, int x, int y) {
+        String[] names;
+        String[] descriptions;
+        boolean[] states;
+
+        switch (tab) {
+            case "Movement" -> {
+                names = new String[]{"Auto Sprint", "Zoom Key"};
+                descriptions = new String[]{"Sprint while moving forward", "Hold C to zoom in"};
+                states = new boolean[]{CheatLabClient.autoSprint, CheatLabClient.zoomEnabled};
+            }
+            case "Visual" -> {
+                names = new String[]{"Fullbright"};
+                descriptions = new String[]{"Increase brightness in dark areas"};
+                states = new boolean[]{CheatLabClient.fullbright};
+            }
+            case "Info" -> {
+                names = new String[]{"Keystrokes", "Armor Status", "World Clock"};
+                descriptions = new String[]{"Live WASD key display", "Armor durability in percent", "In-game time and day"};
+                states = new boolean[]{CheatLabClient.keystrokes, CheatLabClient.armorStatus,
+                        CheatLabClient.worldClock};
+            }
+            default -> {
+                names = new String[]{"FPS Counter", "Coordinates", "Ping Display", "Watermark"};
+                descriptions = new String[]{"Current frame rate", "Player block position",
+                        "Connection latency", "CheatLab HUD label"};
+                states = new boolean[]{CheatLabClient.fpsCounter, CheatLabClient.coordinates,
+                        CheatLabClient.pingDisplay, CheatLabClient.watermark};
+            }
+        }
+
+        for (int i = 0; i < names.length; i++) {
+            int rowY = y + 88 + i * 53;
+            int cardX = x + 147;
+            context.drawTexture(CARD, cardX, rowY, 315, 47,
+                    0.0F, 0.0F, 572, 92, 572, 92);
+            context.drawTextWithShadow(textRenderer, Text.literal(names[i]),
+                    cardX + 12, rowY + 10, WHITE);
+            context.drawTextWithShadow(textRenderer, Text.literal(descriptions[i]),
+                    cardX + 12, rowY + 26, MUTED);
+            Identifier toggle = states[i] ? SWITCH_ON : SWITCH_OFF;
+            context.drawTexture(toggle, cardX + 258, rowY + 10, 48, 24,
+                    0.0F, 0.0F, 112, 56, 112, 56);
         }
     }
 
-    private boolean hit(double mx, double my, int x, int y, int w, int h) {
-        return mx >= x && mx <= x+w && my >= y && my <= y+h;
+    private static void circle(DrawContext context, int x, int y, double radius, int color) {
+        for (int dy = -(int) radius; dy <= (int) radius; dy++) {
+            int dx = (int) Math.floor(Math.sqrt(Math.max(0.0, radius * radius - dy * dy)));
+            context.fill(x - dx, y + dy, x + dx + 1, y + dy + 1, color);
+        }
+    }
+
+    private boolean hit(double mouseX, double mouseY, int x, int y, int w, int h) {
+        return mouseX >= x && mouseX <= x + w && mouseY >= y && mouseY <= y + h;
     }
 
     @Override
-    public boolean mouseClicked(double mx, double my, int button) {
-        if (button != GLFW.GLFW_MOUSE_BUTTON_1) return super.mouseClicked(mx, my, button);
-        int x = width/2-225, y = height/2-145, row = y+95;
-        for (int i=0;i<TABS.length;i++) {
-            if (hit(mx,my,x+19,y+54+i*43,98,29)) { tab=TABS[i]; return true; }
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        if (button != GLFW.GLFW_MOUSE_BUTTON_1) return super.mouseClicked(mouseX, mouseY, button);
+
+        int x = width / 2 - 240;
+        int y = height / 2 - 160;
+
+        for (int i = 0; i < TABS.length; i++) {
+            if (hit(mouseX, mouseY, x + 19, y + 67 + i * 48, 111, 30)) {
+                tab = TABS[i];
+                return true;
+            }
         }
-        int left=x+147;
-        if (tab.equals("Combat")) {
-            if (hit(mx,my,left,row+41,286,42)) CheatLabClient.keystrokes=!CheatLabClient.keystrokes;
-            else if (hit(mx,my,left,row+90,286,42)) CheatLabClient.armorStatus=!CheatLabClient.armorStatus;
-            else return super.mouseClicked(mx,my,button);
+
+        int cardX = x + 147;
+        int count = switch (tab) {
+            case "Movement" -> 2;
+            case "Visual" -> 1;
+            case "Info" -> 3;
+            default -> 4;
+        };
+        for (int i = 0; i < count; i++) {
+            int rowY = y + 88 + i * 53;
+            if (!hit(mouseX, mouseY, cardX, rowY, 315, 47)) continue;
+
+            switch (tab) {
+                case "Movement" -> {
+                    if (i == 0) CheatLabClient.autoSprint = !CheatLabClient.autoSprint;
+                    if (i == 1) CheatLabClient.zoomEnabled = !CheatLabClient.zoomEnabled;
+                }
+                case "Visual" -> CheatLabClient.setFullbright(client, !CheatLabClient.fullbright);
+                case "Info" -> {
+                    if (i == 0) CheatLabClient.keystrokes = !CheatLabClient.keystrokes;
+                    if (i == 1) CheatLabClient.armorStatus = !CheatLabClient.armorStatus;
+                    if (i == 2) CheatLabClient.worldClock = !CheatLabClient.worldClock;
+                }
+                default -> {
+                    if (i == 0) CheatLabClient.fpsCounter = !CheatLabClient.fpsCounter;
+                    if (i == 1) CheatLabClient.coordinates = !CheatLabClient.coordinates;
+                    if (i == 2) CheatLabClient.pingDisplay = !CheatLabClient.pingDisplay;
+                    if (i == 3) CheatLabClient.watermark = !CheatLabClient.watermark;
+                }
+            }
             return true;
         }
-        if (tab.equals("Movement") && hit(mx,my,left,row-8,286,42)) {
-            CheatLabClient.autoSprint=!CheatLabClient.autoSprint; return true;
-        }
-        if (tab.equals("Visual") && hit(mx,my,left,row-8,286,42)) {
-            CheatLabClient.setFullbright(client,!CheatLabClient.fullbright); return true;
-        }
-        if (tab.equals("HUD")) {
-            if (hit(mx,my,left,row-8,286,42)) CheatLabClient.fpsCounter=!CheatLabClient.fpsCounter;
-            else if (hit(mx,my,left,row+41,286,42)) CheatLabClient.coordinates=!CheatLabClient.coordinates;
-            else if (hit(mx,my,left,row+90,286,42)) CheatLabClient.watermark=!CheatLabClient.watermark;
-            else return super.mouseClicked(mx,my,button);
-            return true;
-        }
-        return super.mouseClicked(mx,my,button);
+        return super.mouseClicked(mouseX, mouseY, button);
     }
 
-    @Override public boolean shouldPause() { return false; }
+    @Override
+    public boolean shouldPause() {
+        return false;
+    }
 }
