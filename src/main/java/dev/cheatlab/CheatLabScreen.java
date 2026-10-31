@@ -36,7 +36,7 @@ public final class CheatLabScreen extends Screen {
         int y = height / 2 - 160;
         double pulse = (Math.sin((System.nanoTime() - startedAt) / 460000000.0) + 1.0) / 2.0;
 
-        context.drawTexture(PANEL, x, y, 480, 320, 0.0F, 0.0F, 900, 660, 900, 660);
+        context.drawTexture(PANEL, x, y, 480, 320, 0.0F, 0.0F, 480, 320, 480, 320);
         context.fill(x + 13, y + 54, x + 137, y + 303, 0x99101923);
         context.drawTextWithShadow(textRenderer, Text.literal("CHEATLAB"), x + 22, y + 17, GREEN);
         context.drawTextWithShadow(textRenderer, Text.literal("FABRIC 1.20.4  /  CLIENT"),
@@ -102,14 +102,14 @@ public final class CheatLabScreen extends Screen {
             int rowY = y + 88 + i * 53;
             int cardX = x + 147;
             context.drawTexture(CARD, cardX, rowY, 315, 47,
-                    0.0F, 0.0F, 572, 92, 572, 92);
+                    0.0F, 0.0F, 286, 46, 286, 46);
             context.drawTextWithShadow(textRenderer, Text.literal(names[i]),
                     cardX + 12, rowY + 10, WHITE);
             context.drawTextWithShadow(textRenderer, Text.literal(descriptions[i]),
                     cardX + 12, rowY + 26, MUTED);
             Identifier toggle = states[i] ? SWITCH_ON : SWITCH_OFF;
             context.drawTexture(toggle, cardX + 258, rowY + 10, 48, 24,
-                    0.0F, 0.0F, 112, 56, 112, 56);
+                    0.0F, 0.0F, 56, 28, 56, 28);
         }
     }
 
