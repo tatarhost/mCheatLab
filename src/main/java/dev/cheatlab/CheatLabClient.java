@@ -82,7 +82,7 @@ public final class CheatLabClient implements ClientModInitializer {
 
             int y = 8;
             if (watermark) {
-                drawTexture(drawContext, PANEL, 7, 6, 116, 25, 900, 660);
+                drawTexture(drawContext, PANEL, 7, 6, 116, 25, 480, 320);
                 drawContext.drawTextWithShadow(client.textRenderer,
                         Text.literal("CHEATLAB"), 17, 13, 0xFF78F5AD);
                 y = 36;
@@ -132,7 +132,7 @@ public final class CheatLabClient implements ClientModInitializer {
                         int remaining = stack.getMaxDamage() <= 0 ? 100
                                 : Math.max(0, (stack.getMaxDamage() - stack.getDamage()) * 100
                                 / stack.getMaxDamage());
-                        drawTexture(drawContext, CARD, x - 5, yy - 3, 122, 16, 572, 92);
+                        drawTexture(drawContext, CARD, x - 5, yy - 3, 122, 16, 286, 46);
                         drawContext.drawTextWithShadow(client.textRenderer,
                                 Text.literal(stack.getName().getString() + "  " + remaining + "%"),
                                 x, yy, remaining < 20 ? 0xFFFF8B8B : 0xFFE7EDF5);
@@ -146,14 +146,14 @@ public final class CheatLabClient implements ClientModInitializer {
     private static void drawInfoLine(net.minecraft.client.gui.DrawContext context,
                                      MinecraftClient client, String value, int y, int color) {
         drawTexture(context, CARD, 6, y - 3, Math.max(120, client.textRenderer.getWidth(value) + 18),
-                16, 572, 92);
+                16, 286, 46);
         context.drawTextWithShadow(client.textRenderer, Text.literal(value), 11, y, color);
     }
 
     private static void keyBox(net.minecraft.client.gui.DrawContext context, MinecraftClient client,
                                int x, int y, String label, KeyBinding key) {
         int color = key.isPressed() ? 0xFF78F5AD : 0xFFE7EDF5;
-        drawTexture(context, CARD, x, y, 19, 17, 572, 92);
+        drawTexture(context, CARD, x, y, 19, 17, 286, 46);
         context.drawCenteredTextWithShadow(client.textRenderer, Text.literal(label),
                 x + 9, y + 5, color);
     }
